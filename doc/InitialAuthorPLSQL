@@ -1,0 +1,15 @@
+DECLARE
+  erow AUTHOR%ROWTYPE;
+  CURSOR mycur IS SELECT T.id,t.author FROM T_PAPER T;
+  c NUMBER;
+begin
+  FOR erow IN mycur LOOP
+      c:=c+1;
+  IF (length(erow.author)>4 and length(erow.author)<30 AND)THEN
+  INSERT INTO AUTHOR values(erow.id,erow.author);
+  END IF;
+  IF(MOD(c,100)=0) THEN commit;     
+  END IF;
+  END LOOP;
+  
+end InitialAuthor;
