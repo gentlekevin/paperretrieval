@@ -281,7 +281,7 @@ public class Myfptree2 {
       ordermap.put(node.getName(), i);
     }
     
-  }
+  } 
   public static void main(String[] args) throws IOException {
   
     //读取数据
