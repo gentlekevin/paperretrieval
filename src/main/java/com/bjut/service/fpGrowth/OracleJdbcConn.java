@@ -21,6 +21,7 @@ public class OracleJdbcConn {
    conn = DriverManager.getConnection("jdbc:oracle:thin:@172.21.7.9:1521:bjutailib", "bjut", "bjut");
    stmt = conn.createStatement();
    rs = stmt.executeQuery("select paperid,authors from T_PAPER_AUTHOR");
+   
    long count = 0;
    while(rs.next()) {
    
@@ -35,9 +36,12 @@ public class OracleJdbcConn {
     if(count%1000==0){
     	System.out.println(count);
     }
-    if(count>1000000) break;
+    if(count>10000) break;
     //System.out.println(rs.getInt("deptno"));
    }
+   
+   FpGrowthTest.digTree(transactions,frequences,conn,stmt);
+   conn.commit();
   } catch (ClassNotFoundException e) {
    e.printStackTrace();
   } catch (SQLException e) {
@@ -61,7 +65,7 @@ public class OracleJdbcConn {
    }
   }
   
-  FpGrowthTest.digTree(transactions,frequences);
+  
   
   
  }

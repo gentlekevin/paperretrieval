@@ -2,6 +2,9 @@ package com.bjut.service.fpGrowth;
 
 import java.io.File;
 import java.io.IOException;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -12,11 +15,12 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 public class FpGrowthTest {
 	private static int support = 3;
-    
+    private static long count=0;
     public static void main(String[] args) throws IOException{
         //从文件中读取事物数据集
     	  String file="e://test.txt";
@@ -38,10 +42,11 @@ public class FpGrowthTest {
         //初始一个频繁模式集
         List<String> frequences = new LinkedList<String>();
         //开始递归
-        digTree(transactions,frequences);
+        //digTree(transactions,frequences);
     }
+   
     public static void digTree(List<List<String>> transactions,
-            List<String> frequences){
+            List<String> frequences,Connection conn,Statement stmt){
         //扫描事物数据集，排序
         final Map<String,Integer> sortedMap = scanAndSort(transactions);
         //没有数据是支持最小支持度了，可以停止了
@@ -65,11 +70,31 @@ public class FpGrowthTest {
              
             LinkedList<String> nextFrequences = new LinkedList<String>(frequences);
             nextFrequences.add(subject);
+          
             if(nextFrequences.size()>1){
-                System.out.println(StringUtils.join(nextFrequences,",")+"\t"+sortedMap.get(subject)+index.get(subject).get(0).getPapers());
+            	
+            	  StringBuffer papers = new StringBuffer();
+            	for(String paperid:index.get(subject).get(0).getPapers()){
+            		papers.append(paperid+",");
+            		
+            	}
+            	String sql="insert into t_authors_papers values(t_authors_papers_id.nextval,'"+StringUtils.join(nextFrequences,",")+"','"+papers.toString()+"')";
+            	 System.out.println(sql);   
+               
+                	//每一千条提交一下
+                	try {
+                		 stmt.execute(sql);
+                		 count++;
+                		 if(count%1000==0){
+                			 conn.commit();	 
+                		 }					
+					} catch (SQLException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
             }
              
-            digTree(frequentModeBases,nextFrequences);
+            digTree(frequentModeBases,nextFrequences,conn,stmt);
              
         }
         
