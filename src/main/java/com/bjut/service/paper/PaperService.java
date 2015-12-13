@@ -1,19 +1,12 @@
 package com.bjut.service.paper;
 
-
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.cn.smart.SmartChineseAnalyzer;
-import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.document.LongField;
@@ -29,7 +22,6 @@ import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.ScoreDoc;
 import org.apache.lucene.search.TopDocs;
-import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 import org.apache.lucene.store.MMapDirectory;
 import org.slf4j.Logger;
@@ -38,13 +30,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
-import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Component;
 import org.springside.modules.utils.Clock;
-
+import com.bjut.entity.AuthorPaper;
 import com.bjut.entity.Paper;
+import com.bjut.repository.AuthorPaperDao;
 import com.bjut.repository.PaperDao;
 import com.bjut.service.SpecificationFindUtil;
 import com.bjut.service.account.AccountService;
@@ -61,6 +51,8 @@ public class PaperService {
 	private static Logger logger = LoggerFactory.getLogger(AccountService.class);
 	@Autowired
 	private PaperDao paperDao;
+	@Autowired
+	private AuthorPaperDao authorPaperDao;
 	private Clock clock = Clock.DEFAULT;
     public List<Paper> findAllPaper(){
     	
@@ -68,11 +60,10 @@ public class PaperService {
     	
     }	
     public void indexPapers(){
-    	String indexPath = "./index";
+    	String indexPath = "d:/fpindex";
     	Analyzer analyzer = null;
     	IndexWriterConfig iwc = null;
-    	Directory dir = null;
-    	IndexWriter writer =  null;
+       	IndexWriter writer =  null;
     	MMapDirectory mdir = null;
     	try {
     		
@@ -89,22 +80,23 @@ public class PaperService {
 	         int pagesize = 100;
 	         int pageNum = 1;
 	       
-	         Page<Paper> papers = null;
+	         Page<AuthorPaper> papers = null;
 	         logger.info("index begin,begin time:"+clock.getCurrentTimeInMillis());
 	         while(flag){
-	        	  papers = this.findPapersByNum(pagesize, pageNum);
+	        	  papers = this.findAuthorPaperByNum(pagesize, pageNum);
 	          	  if(papers.getSize()<100){
 	          		  flag = false;
 	          		count= count+papers.getSize();
 	          	  }
 	          	  pageNum++;
 	          	  count = count+100;
-	              if(count>1000000){
-	            	  flag = false; 
-	              }
-	 	         for(Paper paper : papers){
+	              
+	 	         for(AuthorPaper paper : papers){
 	 	       //index every paper
 	 	        	 indexDoc(writer, paper);	 
+	 	         }
+	 	         if(count>100000){
+	 	        	 break;
 	 	         }
 	 	        logger.info("paper index{}pages,total:{}records--------",pageNum,count);
 	         }       
@@ -119,30 +111,15 @@ public class PaperService {
     
     }
     // Indexes a single paper
-    static void indexDoc(IndexWriter writer, Paper paper) throws IOException {
-      
-    	if(paper.getId()==null){
-    		return;
-    	}
+    static void indexDoc(IndexWriter writer, AuthorPaper paper) throws IOException {
+     
         // make a new, empty document
         Document doc = new Document();
         
         doc.add(new LongField("id",paper.getId() , Field.Store.YES));
-        if(paper.getAuthor()!=null){
-        	doc.add(new TextField("author", paper.getAuthor(),Field.Store.NO));	
-        }
-        if(paper.getAbstracts()!=null){
-        	doc.add(new TextField("abstarct", paper.getAbstracts(),Field.Store.NO));	
-        }
-        if(paper.getKeyword()!=null){
-        	doc.add(new TextField("keyword", paper.getKeyword(),Field.Store.NO));	
-        }
-        if(paper.getTitle()!=null){
-        	doc.add(new TextField("title", paper.getTitle(),Field.Store.NO));	
-        }
-        if(paper.getSourbase()!=null){
-        	doc.add(new TextField("sourceBase", paper.getSourbase(),Field.Store.NO));
-        }     
+        if(paper.getAuthors()!=null){
+        	doc.add(new TextField("author", paper.getAuthors(),Field.Store.NO));	
+        }      
          
           writer.addDocument(doc);
         
@@ -197,6 +174,14 @@ public class PaperService {
     	
     	 PageRequest pageRequest = SpecificationFindUtil.buildPageRequest(pageNumber, pageSize, null);
     	 return (Page<Paper>) paperDao.findAll(null,pageRequest);
+    	
+    }
+    
+    //分页查询数据库
+    public Page <AuthorPaper> findAuthorPaperByNum(int pageSize,int pageNumber){
+    	
+    	 PageRequest pageRequest = SpecificationFindUtil.buildPageRequest(pageNumber, pageSize, null);
+    	 return (Page<AuthorPaper>) authorPaperDao.findAll(null,pageRequest);
     	
     }
     
