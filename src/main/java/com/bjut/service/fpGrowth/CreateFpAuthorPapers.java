@@ -5,7 +5,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
-public class CreateAuthorPapers {
+public class CreateFpAuthorPapers {
 
  public static void main(String[] args) {
   ResultSet rs = null;
@@ -20,48 +20,50 @@ public class CreateAuthorPapers {
    //new oracle.jdbc.driver.OracleDriver();
    conn = DriverManager.getConnection("jdbc:oracle:thin:@172.21.7.9:1521:bjutailib", "bjut", "bjut");
    stmt = conn.createStatement();
-   rs = stmt.executeQuery("select id,authors from T_PAPER_AUTHOR");
+   rs = stmt.executeQuery("select authors,papers from T_authors_papers");
    
    long count = 0;
    Map<String, String> map = new HashMap<String, String>();
-   String paperId;
+  
    String []authors;
    while(rs.next()) {
    
-     paperId =rs.getString("id");
+	   authors =rs.getString("authors").split(",");
     authors = rs.getString("authors").split(",");
    for(String author:authors){
 	   
 	   
 	   if(map.containsKey(author)){
-		   if( map.get(author).length()>3500)break;
-		   map.put(author, map.get(author)+","+paperId);
+		   if( map.get(author).length()+rs.getString("papers").length()>3999)break;
+		   map.put(author, map.get(author)+","+rs.getString("papers"));
 	   }else{
-		   map.put(author, paperId);
+		   map.put(author, rs.getString("papers"));
 	   }
    }
    count++;
-   if(count%1000==0){
+   if(count%100000==0){
    	System.out.println("共处理了："+count);
    	
    } 
    
    }
-   String key=null;
+  
 count=0;
    for (Entry<String, String> entry : map.entrySet()) {  
-	   
-	   key= entry.getKey();
-	   key = key.replaceAll("'", "");
-	   key = key.replaceAll(",", "");
+	    
 	   	
-	    System.out.println("Key = " + entry.getKey() + ", Value = " + entry.getValue());  
-	    stmt.execute("insert into t_author_papers values(t_author_papers_id.nextval,'"+key+"','"+entry.getValue()+"')");
+	   // System.out.println("Key = " + entry.getKey() + ", Value = " + entry.getValue());  
+	   try{
+		   stmt.execute("insert into t_fp_author_papers values(t_fp_author_papers_id.nextval,'"+entry.getKey()+"','"+entry.getValue()+"')");
+	   }catch(SQLException e){
+		   System.out.println("出错的是："+entry.getKey()+","+entry.getValue());
+	   }
+	    
 	  
 	  
     count++;
     if(count%1000==0){
-    	System.out.println(count);
+    	System.out.println("共插入了："+count);
     	conn.commit();
     }
  
