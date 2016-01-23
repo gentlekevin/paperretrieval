@@ -9,6 +9,7 @@ public class SearchBean {
 	private String database;//来源数据库
 	private String searchfield;//搜索范围
 	private String searchwords;//搜索关键字
+	private String currentPage = "1";
 	
 	
 	public SearchBean() {
@@ -16,11 +17,12 @@ public class SearchBean {
 	}
 
 
-	public SearchBean(String database, String searchfield, String searchwords) {
+	public SearchBean(String database, String searchfield, String searchwords, String currentPage) {
 		super();
 		this.database = database;
 		this.searchfield = searchfield;
 		this.searchwords = searchwords;
+		this.currentPage = currentPage;
 	}
 
 
@@ -51,6 +53,16 @@ public class SearchBean {
 
 	public void setSearchwords(String searchwords) {
 		this.searchwords = searchwords;
+	}
+
+
+	public String getCurrentPage() {
+		return currentPage;
+	}
+
+
+	public void setCurrentPage(String currentPage) {
+		this.currentPage = currentPage;
 	}
 	
 	

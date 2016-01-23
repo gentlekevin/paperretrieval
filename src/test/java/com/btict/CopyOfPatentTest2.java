@@ -30,25 +30,28 @@ import org.wltea.analyzer.lucene.IKAnalyzer;
 import com.bjut.entity.AuthorsPapers;
 import com.bjut.entity.Paper;
 
-public class PatentTest2 {
+public class CopyOfPatentTest2 {
 	public static  String fieldTitle = "title";
-	public static String fpfield ="authors";
-	public static int hitsPerPage=10;
+	 public static String fpfield ="authors";
+	 public static int hitsPerPage=10;
   public static void main(String[] args) throws Exception {
     
     System.out.println("*******Initial work is begin****************");
     //paperSearch 参数
     int hitsPerPage = 10;
-    String paperIndex = "G:/LuceneIndex/ieeeIndex";
+    String paperIndex = "F:/index/papersindex";
   
     Analyzer PaperAnalyzer = new IKAnalyzer();
     IndexReader paperreader = DirectoryReader.open(FSDirectory.open(Paths.get(paperIndex)));
     IndexSearcher paperSearcher = new IndexSearcher(paperreader);
     QueryParser paperparser = new QueryParser(fieldTitle, PaperAnalyzer);    
    //fpSearch 参数
-   
+    String fpIndex  = "F:/index/fpindex";
     
-    
+    Analyzer fpAnalyzer = new SmartChineseAnalyzer();
+    IndexReader fpReader = DirectoryReader.open(FSDirectory.open(Paths.get(fpIndex)));
+    IndexSearcher fpSearcher = new IndexSearcher(fpReader);
+    QueryParser fpParser = new QueryParser(fpfield, fpAnalyzer);    
     System.out.println("*******Initial work is ok!****************");
     
     BufferedReader in = null;
@@ -93,11 +96,18 @@ public class PatentTest2 {
              }
              System.out.println("The recommanded papers are :");
              
-            
+             List<Paper> paperss = recommend(IDPapers.get(id).getAuthor().split(","),IDPapers.get(id).getKeyword().split(" "),
+            		 fpSearcher, fpParser, hitsPerPage);
+             for(Paper paper:paperss){
+           	     if(Long.parseLong(id)==paper.getId())continue;
+            	 System.out.println("Id:"+paper.getId()+", title:"+paper.getTitle()+",   author:"+paper.getAuthor()+",   "
+            	 		+ "keyword:"+paper.getKeyword());
+             }
         }  
     }
     paperreader.close();
-     
+    fpReader.close();
+    
   }
   public static List<Paper> papersSearch( IndexSearcher searcher, QueryParser parser, 
 		  String queryString) throws IOException, ParseException {

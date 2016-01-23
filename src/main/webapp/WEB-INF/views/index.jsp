@@ -16,7 +16,8 @@
 <link type="image/x-icon" href="${ctx}/static/images/favicon.ico" rel="shortcut icon" />
 <link href="#/favicon.ico" rel="bookmark icon" />
 <script type="text/javascript" >
-  function submitForm(){
+
+  function subForm(){
 	  $("#searchForm").submit();
   }
 </script>
@@ -110,7 +111,7 @@
 				<br />
 				<!--form-->
 				<div class="xm8" style="width: 100%">
-					<form method="post" class="form-inline" id="searchForm" action = '${ctx}/result'>
+					<form method="post" class="form-inline" id="searchForm" action = '${ctx}/search'>
 					<div class="button-group border-main checkbox">
 
 						<label class="button">数据库：</label>
@@ -118,7 +119,7 @@
 						 <label class="button"><input name="database" value="springer"type="checkbox">Springer</label>
 						 <label class="button"><input name="database" value="ieee" type="checkbox">IEEE</label>
                      </div>
-					</br> </br>
+					<br/> <br/>
 				  	<div class="form-group">
 							<div class="field">
 								<select class="input" style="width: 80px;" name="searchfield">
@@ -126,16 +127,17 @@
 									<option value="title">篇名</option>
 									<option value="author">作者</option>
 									<option value="keyword">关键字</option>
-									<option value="abstract">全文</option>
-								</select>
+																	</select>
 							</div>
 						</div>
 						<div class="form-group">
 
 							<div class="field" style="width: 600px">
 								<input type="text" class="input" id="searchwords" name="searchwords"
-									size="70" placeholder="关键词" /> <span class="addbtn"><button
-										type="button" class="button bg-main icon-search" onclick="submitForm();"></button></span>
+									size="70" placeholder="关键词" /> <span class="addbtn">
+									<button	type="button" class="button bg-main icon-search"  onclick="subForm();"></button></span>
+							
+							
 							</div>
 						</div>
 				</form>

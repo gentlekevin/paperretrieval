@@ -17,12 +17,12 @@
 	</appender>
 
 	<!-- project default level -->
-	<logger name="com.bjut" level="INFO" />
+	<logger name="com.bjut" level="info" />
 
 	<!--log4jdbc -->
-	<logger name="jdbc.sqltiming" level="INFO"/>
+	<logger name="jdbc.sqltiming" level="info"/>
 
-	<root level="WARN">
+	<root level="info">
 		<appender-ref ref="console" />
 		<appender-ref ref="rollingFile" />
 	</root>

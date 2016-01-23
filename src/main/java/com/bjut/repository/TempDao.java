@@ -5,17 +5,15 @@
  *******************************************************************************/
 package com.bjut.repository;
 
-import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
-import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.PagingAndSortingRepository;
+import com.bjut.entity.temp;
 
-import com.bjut.entity.Paper;
 
 
-public interface PaperDao extends PagingAndSortingRepository<Paper, Long>,
-JpaSpecificationExecutor<Paper> {
+public interface TempDao extends PagingAndSortingRepository<temp, Long>,
+JpaSpecificationExecutor<temp> {
 	
 
 	

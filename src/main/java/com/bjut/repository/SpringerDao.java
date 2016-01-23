@@ -11,11 +11,13 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.PagingAndSortingRepository;
 
+import com.bjut.entity.IEEE;
 import com.bjut.entity.Paper;
+import com.bjut.entity.Springer;
 
 
-public interface PaperDao extends PagingAndSortingRepository<Paper, Long>,
-JpaSpecificationExecutor<Paper> {
+public interface SpringerDao extends PagingAndSortingRepository<Springer, Long>,
+JpaSpecificationExecutor<Springer> {
 	
 
 	

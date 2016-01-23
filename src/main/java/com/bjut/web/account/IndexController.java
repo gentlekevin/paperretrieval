@@ -1,13 +1,17 @@
 
 package com.bjut.web.account;
 
+import org.apache.lucene.queryparser.classic.ParseException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+
+import com.bjut.search.IndexConstant;
 import com.bjut.service.paper.PaperService;
+import com.bjut.service.search.SearchService;
 import com.bjut.web.formbean.SearchBean;
 
 
@@ -21,40 +25,14 @@ public class IndexController {
 	
 	@Autowired
 	private PaperService paperService;
-	
+	@Autowired
+	private SearchService searchService;
 	
 	@RequestMapping(value="/index",method = {RequestMethod.GET,RequestMethod.POST})
 	public String index() {
 		return "/index";
 	}
-	/**
-	 * 用来处search的过程
-	 * @param searchBean
-	 * @param model
-	 * @return 
-	 */
-	@RequestMapping(value="/result",method = {RequestMethod.GET,RequestMethod.POST,})
-	public String search(@ModelAttribute("searchBean") SearchBean searchBean,Model model) {
-		
-		System.out.println("database:"+searchBean.getDatabase());
-		System.out.println("searchfiled:"+searchBean.getSearchfield());
-		System.out.println("searchwords:"+searchBean.getSearchwords());
-		
-		//paperService.findPapersByPage(queryString, field, pageNumber, pageSize)
-		
-		
-		return "/result";
-	}
-	
-	
-	@RequestMapping(value="/createIndex",method = {RequestMethod.GET,RequestMethod.POST,})
-	public void createIndex() {
-	    
-		paperService.indexPapers();
-		
-	}
-	
-	
+
 	
 	/**
 	 * 
