@@ -5,18 +5,17 @@
  *******************************************************************************/
 package com.bjut.repository;
 
-
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.PagingAndSortingRepository;
+import com.bjut.entity.KeywordPaper;
 
 
-import com.bjut.entity.Paper;
 
-
-public interface PaperDao extends PagingAndSortingRepository<Paper, Long>,
-JpaSpecificationExecutor<Paper> {
+public interface KeywordPaperDao extends PagingAndSortingRepository<KeywordPaper, Long>,
+JpaSpecificationExecutor<KeywordPaper> {
 	
-
-
+	@Query(" from  KeywordPaper a where a.keyword=?1")
+	public KeywordPaper findPaperIdsByAuthor(String keyword);
 	
 }

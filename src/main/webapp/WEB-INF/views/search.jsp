@@ -149,7 +149,7 @@
 						<div class="form-group">
 							<div class="field">
 								<select class="input" style="width: 80px;" name="searchfield">
-									<option>------</option>
+									<option  value="">------</option>
 									<option   ${searchBean.searchfield== 'title' ? 'selected' : ''}   value="title">题目</option>
 									<option   ${searchBean.searchfield== 'author' ? 'selected' : ''}  value="author">作者</option>
 									<option  ${searchBean.searchfield== 'keyword' ? 'selected' : ''}   value="keyword">关键字</option>
@@ -181,7 +181,7 @@
 							<div class="media media-x">
 
 								<div class="media-body">
-									<a><strong>${paper.title}</strong></a>
+									<a href="${ctx}/search/detail?paperId=${paper.id}"><strong>${paper.title}</strong></a>
 									作者：${paper.author}&nbsp&nbsp 关键字：${paper.keyword}&nbsp&nbsp 数据库：${paper.sourbase}
 								</div>
 							</div>

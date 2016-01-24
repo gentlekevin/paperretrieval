@@ -7,13 +7,10 @@ package com.bjut.repository;
 
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.repository.PagingAndSortingRepository;
-
 import com.bjut.entity.AuthorPaper;
-import com.bjut.entity.Paper;
-
 
 public interface AuthorPaperDao extends PagingAndSortingRepository<AuthorPaper, Long>,
 JpaSpecificationExecutor<AuthorPaper> {
-	
+
 	
 }

@@ -4,54 +4,40 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.document.Document;
-import org.apache.lucene.document.LongField;
-import org.apache.lucene.document.StringField;
-import org.apache.lucene.document.TextField;
 import org.apache.lucene.index.DirectoryReader;
 import org.apache.lucene.index.IndexReader;
-import org.apache.lucene.index.IndexWriter;
-import org.apache.lucene.index.IndexWriterConfig;
-import org.apache.lucene.index.IndexWriterConfig.OpenMode;
 import org.apache.lucene.index.MultiReader;
+import org.apache.lucene.queryparser.classic.MultiFieldQueryParser;
 import org.apache.lucene.queryparser.classic.ParseException;
-import org.apache.lucene.queryparser.classic.QueryParser;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.ScoreDoc;
 import org.apache.lucene.search.TopDocs;
 import org.apache.lucene.store.FSDirectory;
-import org.apache.lucene.store.MMapDirectory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Component;
 import org.springside.modules.utils.Clock;
 import org.wltea.analyzer.lucene.IKAnalyzer;
 
-import com.bjut.entity.CNKI;
-import com.bjut.entity.IEEE;
+import com.bjut.entity.AuthorPapers;
 import com.bjut.entity.Paper;
-import com.bjut.entity.Springer;
-import com.bjut.repository.CNKIDao;
-import com.bjut.repository.IEEEDao;
+import com.bjut.repository.AuthorPapersDao;
+import com.bjut.repository.FpAuthorPaperDao;
+import com.bjut.repository.KeywordPaperDao;
 import com.bjut.repository.PaperDao;
-import com.bjut.repository.SpringerDao;
-import com.bjut.service.SpecificationFindUtil;
-import com.bjut.search.IndexConstant;
-import com.bjut.search.field.SingleAuthorField;
-import com.bjut.search.field.SingleDucument;
-import com.bjut.search.field.SingleIdField;
-import com.bjut.search.field.SingleKeywordField;
-import com.bjut.search.field.SingleSourceField;
-import com.bjut.search.field.SingleTitleField;
+import com.bjut.search.SearchUtil;
+import com.btict.PaperDAO;
 
 /**
  * 搜索相关
@@ -66,17 +52,31 @@ public class SearchService {
 	private Clock clock = Clock.DEFAULT;
      @Autowired
 	private PaperDao paperDao;
-	
-    public Map findPaperBypage(String querystring,String filed,String []databaseIndex,int start,int end) throws ParseException{
+     @Autowired
+    private FpAuthorPaperDao fpAuthorPaperDao;
+     @Autowired
+    private KeywordPaperDao keywordPaperDao;
+     @Autowired
+    private AuthorPapersDao authorPapersDao; 
+    
+	/**
+	 * 
+	 * @param querystring  要查询的字符串数组
+	 * @param fields       要查询的字符串对应的数组
+	 * @param databaseIndex  索要查询的数据库
+	 * @param start        要查询的开始记录
+	 * @param end          查询结果的结束记录
+	 * @return
+	 * @throws ParseException
+	 */
+    public Map findPaperBypage(String querystring[],String []fields,String []databaseIndex,int start,int end) throws ParseException{
     	
     	    Analyzer PaperAnalyzer = new IKAnalyzer();
     	    //IndexReader paperreader;
     	    IndexSearcher searcher = null;
     	    IndexReader []	readers = new IndexReader[databaseIndex.length];
-    	    IndexSearcher[] searchers = new IndexSearcher[databaseIndex.length];
-    	    MultiReader multiReader = null;
-    	    QueryParser parser = null;
-    	    Query query = null;
+    	        MultiReader multiReader = null;
+    	       	    
     	    ScoreDoc[] hits=null;
     	    int numTotalHits = 0;
     	    List<Paper> papers = new ArrayList<Paper>();
@@ -89,11 +89,10 @@ public class SearchService {
     	   			}
     	   		multiReader = new MultiReader(readers);
     	   		searcher = new IndexSearcher(multiReader);
-	    	    parser = new QueryParser(filed, PaperAnalyzer); 
-	    	    query = parser.parse(querystring);
-	    	    logger.info("Searching for:{} " , query.toString(filed));
-	    	        	 
-	    	    TopDocs results = searcher.search(query,  end);
+    	   		Query multiquery = MultiFieldQueryParser.parse(querystring,fields, PaperAnalyzer);
+	    	    logger.info("Searching for:{} " , multiquery.toString(fields.toString()));
+	    	       	    
+	    	    TopDocs results = searcher.search(multiquery,  end);
 	    	    hits = results.scoreDocs;
 	    	    numTotalHits = results.totalHits;
 	    	    logger.info("{} total matching documents",numTotalHits);
@@ -120,6 +119,106 @@ public class SearchService {
     	       
     	
     } 
+    
+  //在fp表中得到所有相关的论文的id 并放近paperIdScore<key：,count:出现的次数>
+    public List<Paper> recommand(Paper paper){
+    	
+    	List<Paper> papers  = new ArrayList<Paper>();;
+    	
+		
+	  Map<String,Float> paperIdScore = new HashMap<String, Float>();
+	  float keywordWeight = 1.5f;
+	  int sequence = 0;
+	 
+	  
+	  //获得每个作者的文章及打分
+	  if(paper.getAuthor()!=null&&!"".equals(paper.getAuthor())){
+		  String [] authors = paper.getAuthor().split(",");
+	  
+	  for(String author:authors){
+		
+		  sequence++;
+     if(authorPapersDao.findPaperIdsByAuthor(author)!=null){
 	
+    	 String[] PaperIds = authorPapersDao.findPaperIdsByAuthor(author).getPapers().split(",");
+			for(String paperId:PaperIds){
+	    		if(paperIdScore.containsKey(paperId)){
+	    			paperIdScore.put(paperId, paperIdScore.get(paperId)+SearchUtil.getScoreByAuthorSequence(sequence));
+	    		}else{
+	    				    			
+	    			paperIdScore.put(paperId, SearchUtil.getScoreByAuthorSequence(sequence));
+	    		}
+	    	}
+		  
+	  }}
+    }  
+	   //获得关键字对应的的论文
+	  if(paper.getKeyword()!=null&&"".equals(paper.getKeyword())){
+		  String [] keywords = paper.getKeyword().split(",");	  
+	  for(String keyword:keywords){
+		    
+		  if(keywordPaperDao.findPaperIdsByAuthor(keyword)!=null){
+		    String [] PaperIds = keywordPaperDao.findPaperIdsByAuthor(keyword).getPapers().split(",");
+			for(String paperId:PaperIds){
+	    		if(paperIdScore.containsKey(paperId)){
+	    			paperIdScore.put(paperId, paperIdScore.get(paperId)+keywordWeight);
+	    		}else{
+	    				    			
+	    			paperIdScore.put(paperId, keywordWeight);
+	    		}
+	    	}
+		  
+	  }	 }
+	  }
+	  sequence = 0;
+	//获得关联规则作者每篇文献
+	  if(paper.getAuthor()!=null&&!"".equals(paper.getAuthor())){
+		  String [] authors = paper.getAuthor().split(",");
+	  for(String author:authors){
+		    sequence++;
+		    if( fpAuthorPaperDao.findPaperIdsByFpAuthor(author)!=null){
+		        
+		    String[] PaperIds = fpAuthorPaperDao.findPaperIdsByFpAuthor(author).getPapers().split(",");
+					for(String paperId:PaperIds){
+			    		if(paperIdScore.containsKey(paperId)){
+			    			paperIdScore.put(paperId, paperIdScore.get(paperId)+SearchUtil.getScoreByFPAuthorSequence(sequence));
+			    		}else{
+			    				    			
+			    			paperIdScore.put(paperId, SearchUtil.getScoreByFPAuthorSequence(sequence));
+			    		}
+			    	}   
+	  }}
+	  }
+	  List<Map.Entry<String,Float>> list = new ArrayList<Map.Entry<String,Float>>(paperIdScore.entrySet());
+    Collections.sort(list,new Comparator<Map.Entry<String,Float>>() {
+        //对得到的文献候选集升序排序
+        public int compare(Entry<String, Float> o1,
+                Entry<String, Float> o2) {
+            return o2.getValue().compareTo(o1.getValue());
+        }
+        
+
+    });
+    int count = 0;
+    List<String>recommendedPapersId = new ArrayList<String>();
+    for(Map.Entry<String,Float> mapping:list){ 
+  	  
+  	  recommendedPapersId.add(mapping.getKey());
+  	  count++;
+  	  if(count>=11)break;
+   }    
+  
+    //封装推荐文献
+    for(String id:recommendedPapersId){
+      
+    	if(id!=null&&!"".equals(id)){
+    	   	
+    	Paper paper1 = paperDao.findOne(Long.valueOf(id));
+    	papers.add(paper1);
+    	}
+    }
+    return  papers;   	
+    	
+    } 
 
 }

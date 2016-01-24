@@ -5,18 +5,16 @@
  *******************************************************************************/
 package com.bjut.repository;
 
-
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.PagingAndSortingRepository;
+import com.bjut.entity.FpAuthorPaper;
 
 
-import com.bjut.entity.Paper;
-
-
-public interface PaperDao extends PagingAndSortingRepository<Paper, Long>,
-JpaSpecificationExecutor<Paper> {
+public interface FpAuthorPaperDao extends PagingAndSortingRepository<FpAuthorPaper, Long>,
+JpaSpecificationExecutor<FpAuthorPaper> {
 	
-
-
+	@Query(" from  FpAuthorPaper a where a.author=?1")
+	public FpAuthorPaper findPaperIdsByFpAuthor(String author);
 	
 }
