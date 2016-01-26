@@ -42,8 +42,8 @@
 	<div class="layout bg-black bg-inverse">
 		<div class="container height-large">
 			<span class="float-right text-small text-gray hidden-l"> <a
-				class="text-main" href="#">注册</a><span> | </span><a
-				class="text-main" href="#">登录</a>
+				class="text-main" style="cursor:pointer;"  href="${ctx}/register" >注册</a><span> | </span><a
+				class="text-main" style="cursor:pointer;"  href="${ctx}/login">登录</a>
 			</span> 欢迎使用<a href="#">统一检索系统</a>
 		</div>
 	</div>
@@ -226,92 +226,24 @@
 
 			</div>
 			<div class="xl12 xm4">
-				<h2 class="bg-main text-white padding">你可能喜欢的论文</h2>
+				<h2 class="bg-main text-white padding">热门文献</h2>
 				<div class="padding-big bg">
 					<ul class="list-media list-underline">
+						<c:forEach var="rp" items="${hotPapers}">
 						<li>
 							<div class="media media-x">
 
 								<div class="media-body">
-									<strong>山东软科学研究发展战略方针部署和当前研究重点</strong>
-									作者：刘君钦&nbsp&nbsp&nbsp&nbsp<a
-										class="button button-little border-red swing-hover" href="#">查看详情</a>
+									<strong>${rp.title}</strong>
+									作者：${rp.author}&nbsp&nbsp&nbsp&nbsp<a
+										class="button button-little border-red swing-hover" href="${ctx}/search/detail?paperId=${rp.id}">查看详情</a>
 								</div>
 							</div>
 						</li>
-						<li>
-							<div class="media media-x">
-
-								<div class="media-body">
-									<strong>抓住改革试点机遇 作好科技与经济结合的文章</strong>作者：王旭东&nbsp&nbsp&nbsp&nbsp
-									<a class="button button-little border-red swing-hover" href="#">查看详情</a>
-								</div>
-							</div>
-						</li>
-						<li>
-							<div class="media media-x">
-
-								<div class="media-body">
-									<strong>走科技兴工之路 促枣庄工业快速发展</strong>作者：刁继荣&nbsp&nbsp&nbsp&nbsp<a
-										class="button button-little border-red swing-hover" href="#">查看详情</a>
-								</div>
-							</div>
-						</li>
-						<li>
-							<div class="media media-x">
-
-								<div class="media-body">
-									<strong>德州市一产品荣获巴黎国际发明展览会特别荣誉奖</strong>作者：刘思英&nbsp&nbsp&nbsp&nbsp<a
-										class="button button-little border-red swing-hover" href="#">查看详情</a>
-								</div>
-							</div>
-						</li>
-						<li>
-							<div class="media media-x">
-
-								<div class="media-body">
-									<strong>星火之光——安丘市实施“科教兴安”战略纪实</strong>作者：张念祥,于利民,王志坚&nbsp&nbsp&nbsp&nbsp<a
-										class="button button-little border-red swing-hover" style=""
-										href="#">查看详情</a>
-								</div>
-							</div>
-						</li>
-						<li>
-							<div class="media media-x">
-
-								<div class="media-body">
-									<strong>面向经济建设主战场 开创科技外事新局面</strong>作者：姜建国,谢明&nbsp&nbsp&nbsp&nbsp<a
-										class="button button-little border-red swing-hover" href="#">查看详情</a>
-								</div>
-							</div>
-						</li>
-						<li>
-							<div class="media media-x">
-
-								<div class="media-body">
-									<strong>面向经济建设主战场 开创科技外事新局面</strong>作者：姜建国,谢明&nbsp&nbsp&nbsp&nbsp<a
-										class="button button-little border-red swing-hover" href="#">查看详情</a>
-								</div>
-							</div>
-						</li>
-						<li>
-							<div class="media media-x">
-
-								<div class="media-body">
-									<strong>面向经济建设主战场 开创科技外事新局面</strong>作者：姜建国,谢明&nbsp&nbsp&nbsp&nbsp<a
-										class="button button-little border-red swing-hover" href="#">查看详情</a>
-								</div>
-							</div>
-						</li>
-						<li>
-							<div class="media media-x">
-
-								<div class="media-body">
-									<strong>面向经济建设主战场 开创科技外事新局面</strong>作者：姜建国,谢明&nbsp&nbsp&nbsp&nbsp<a
-										class="button button-little border-red swing-hover" href="#">查看详情</a>
-								</div>
-							</div>
-						</li>
+						
+						</c:forEach>
+						
+					
 					</ul>
 				</div>
 				<br />

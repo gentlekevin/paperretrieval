@@ -111,7 +111,7 @@ public class PaperService {
     //分页查询数据库
     public Page <Paper> findPapersByNum(int pageSize,int pageNumber){
     	
-    	 PageRequest pageRequest = SpecificationFindUtil.buildPageRequest(pageNumber, pageSize, null);
+    	 PageRequest pageRequest = SpecificationFindUtil.buildPageRequest(pageNumber, pageSize,null);
     	 return (Page<Paper>) paperDao.findAll(null,pageRequest);
     	
     }

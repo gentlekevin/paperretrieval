@@ -13,9 +13,9 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-
 import com.bjut.entity.Paper;
 import com.bjut.search.IndexConstant;
+import com.bjut.service.paper.HotPaperService;
 import com.bjut.service.paper.PaperService;
 import com.bjut.service.search.SearchService;
 import com.bjut.web.formbean.PageBean;
@@ -34,8 +34,9 @@ public class SearchController {
 	private PaperService paperService;
 	@Autowired
 	private SearchService searchService;
-	
-    
+	@Autowired
+	private HotPaperService hotPaperService;
+	  
 	/**
 	 * 用来处search的过程
 	 * @param searchBean
@@ -51,7 +52,11 @@ public class SearchController {
 		
 		if(searchBean.getSearchwords()==null||"".equals(searchBean.getSearchwords())){
 			//如果查询关键字为空
+			
+			List<Paper> hotPapers = hotPaperService.findHot10Papers();
+			
 			model.addAttribute("searchBean",searchBean);
+			model.addAttribute("hotPapers",hotPapers);
 		return "/search";
 		}
 		
@@ -101,38 +106,33 @@ public class SearchController {
 				 q=q+ searchBean.getSearchwords()+",";
 			}
 			querystrings = q.split(",");
-		}
-		
-		
+		}		
 		try {			
 			map = searchService.findPaperBypage(querystrings, fields,dbIndex ,start , end);
 		} catch (ParseException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}	
-		
+		List<Paper> hotPapers = hotPaperService.findHot10Papers();
+		model.addAttribute("hotPapers",hotPapers);
 		model.addAttribute("pager", new PageBean(pageSize, currentPage, (Integer)map.get("total")));
 		model.addAttribute("papers",map.get("papers"));
 		model.addAttribute("searchBean",searchBean);
 		
 		return "/search";
-	}
-	
-	
-	
+	}	
 	
 	@RequestMapping(value="/detail",  method = {RequestMethod.GET,RequestMethod.POST})
 	public String detail(@ModelAttribute("paperId") String paperId ,Model model) {
-	    
-		
+	    	
 		Paper paper = paperService.findPaperById(Long.valueOf(paperId));
-		
-		
+		hotPaperService.saveVisitPaper(paper);//用作hotpaper用
 		List<Paper> recommandPapers= searchService.recommand(paper);
 		
 		
 		model.addAttribute("paper", paper);
 		model.addAttribute("recommandPapers", recommandPapers);
+		//model.addAttribute("hotPapers", hotPapers);
 		
 		return "paperDetail";
 	}

@@ -23,21 +23,25 @@ import org.apache.lucene.search.Query;
 import org.apache.lucene.search.ScoreDoc;
 import org.apache.lucene.search.TopDocs;
 import org.apache.lucene.store.FSDirectory;
+import org.apache.lucene.util.ByteBlockPool.DirectAllocator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Component;
 import org.springside.modules.utils.Clock;
 import org.wltea.analyzer.lucene.IKAnalyzer;
 
-import com.bjut.entity.AuthorPapers;
+import com.bjut.entity.HotPaper;
 import com.bjut.entity.Paper;
 import com.bjut.repository.AuthorPapersDao;
 import com.bjut.repository.FpAuthorPaperDao;
+import com.bjut.repository.HotPaperDao;
 import com.bjut.repository.KeywordPaperDao;
 import com.bjut.repository.PaperDao;
 import com.bjut.search.SearchUtil;
-import com.btict.PaperDAO;
+import com.bjut.service.SpecificationFindUtil;
 
 /**
  * 搜索相关
@@ -58,6 +62,8 @@ public class SearchService {
     private KeywordPaperDao keywordPaperDao;
      @Autowired
     private AuthorPapersDao authorPapersDao; 
+    
+    
     
 	/**
 	 * 
@@ -124,10 +130,9 @@ public class SearchService {
     public List<Paper> recommand(Paper paper){
     	
     	List<Paper> papers  = new ArrayList<Paper>();;
-    	
-		
+    		
 	  Map<String,Float> paperIdScore = new HashMap<String, Float>();
-	  float keywordWeight = 1.5f;
+	  float keywordWeight = 2.8f;
 	  int sequence = 0;
 	 
 	  
@@ -153,8 +158,8 @@ public class SearchService {
 	  }}
     }  
 	   //获得关键字对应的的论文
-	  if(paper.getKeyword()!=null&&"".equals(paper.getKeyword())){
-		  String [] keywords = paper.getKeyword().split(",");	  
+	  if(paper.getKeyword()!=null&&!"".equals(paper.getKeyword())){
+		  String [] keywords = paper.getKeyword().split(" ");	  
 	  for(String keyword:keywords){
 		    
 		  if(keywordPaperDao.findPaperIdsByAuthor(keyword)!=null){
@@ -180,10 +185,7 @@ public class SearchService {
 		        
 		    String[] PaperIds = fpAuthorPaperDao.findPaperIdsByFpAuthor(author).getPapers().split(",");
 					for(String paperId:PaperIds){
-			    		if(paperIdScore.containsKey(paperId)){
-			    			paperIdScore.put(paperId, paperIdScore.get(paperId)+SearchUtil.getScoreByFPAuthorSequence(sequence));
-			    		}else{
-			    				    			
+			    		if(!paperIdScore.containsKey(paperId)){
 			    			paperIdScore.put(paperId, SearchUtil.getScoreByFPAuthorSequence(sequence));
 			    		}
 			    	}   
@@ -200,12 +202,14 @@ public class SearchService {
 
     });
     int count = 0;
+   
     List<String>recommendedPapersId = new ArrayList<String>();
     for(Map.Entry<String,Float> mapping:list){ 
-  	  
+  	  if(!(paper.getId().toString()).equals(mapping.getKey())){
   	  recommendedPapersId.add(mapping.getKey());
   	  count++;
   	  if(count>=11)break;
+  	  }
    }    
   
     //封装推荐文献
@@ -220,5 +224,6 @@ public class SearchService {
     return  papers;   	
     	
     } 
-
+   
+  
 }

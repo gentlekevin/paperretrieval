@@ -39,8 +39,8 @@
 	<div class="layout bg-black bg-inverse">
 		<div class="container height-large">
 			<span class="float-right text-small text-gray hidden-l"> <a
-				class="text-main" style="cursor:pointer;"  href="${ctx}/register" >注册</a><span> | </span><a
-				class="text-main" style="cursor:pointer;"  href="${ctx}/login">登录</a>
+				class="text-main" href="#">注册</a><span> | </span><a
+				class="text-main" href="#">登录</a>
 			</span> 欢迎使用<a href="#">统一检索系统</a>
 		</div>
 		
