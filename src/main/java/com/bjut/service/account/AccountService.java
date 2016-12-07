@@ -52,14 +52,6 @@ public class AccountService {
 		return userDao.findByLoginName(loginName);
 	}
 	
-	
-	
-
-	
-
-	
-	
-	
 	public void registerUser(User user) {
 		entryptPassword(user);
 		user.setRoles("user");

@@ -17,4 +17,5 @@ JpaSpecificationExecutor<FpAuthorPaper> {
 	@Query(" from  FpAuthorPaper a where a.author=?1")
 	public FpAuthorPaper findPaperIdsByFpAuthor(String author);
 	
+	
 }

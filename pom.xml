@@ -40,7 +40,7 @@
 
 		<!-- 项目属性 <jdbc.driver.groupId>com.h2database</jdbc.driver.groupId> <jdbc.driver.artifactId>h2</jdbc.driver.artifactId> 
 			<jdbc.driver.version>${h2.version}</jdbc.driver.version> -->
-	
+
 
 
 
@@ -59,27 +59,27 @@
 
 		<!--LUCENE Begin -->
 		<dependency>
-	<groupId>org.apache.lucene</groupId>
-	<artifactId>lucene-analyzers-smartcn</artifactId>
-	<version>5.3.0</version>
-</dependency>
-		
-	<dependency>
-	<groupId>org.apache.lucene</groupId>
-	<artifactId>lucene-core</artifactId>
-	<version>5.0.0</version>
-    </dependency>
-	<dependency>
-	<groupId>org.apache.lucene</groupId>
-	<artifactId>lucene-queryparser</artifactId>
-	<version>5.0.0</version>
-</dependency>
+			<groupId>org.apache.lucene</groupId>
+			<artifactId>lucene-analyzers-smartcn</artifactId>
+			<version>5.3.0</version>
+		</dependency>
 
 		<dependency>
-	<groupId>org.apache.lucene</groupId>
-	<artifactId>lucene-analyzers-common</artifactId>
-	<version>5.0.0</version>
-</dependency>
+			<groupId>org.apache.lucene</groupId>
+			<artifactId>lucene-core</artifactId>
+			<version>5.0.0</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.lucene</groupId>
+			<artifactId>lucene-queryparser</artifactId>
+			<version>5.0.0</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.apache.lucene</groupId>
+			<artifactId>lucene-analyzers-common</artifactId>
+			<version>5.0.0</version>
+		</dependency>
 
 		<dependency>
 			<groupId>org.apache.lucene</groupId>
@@ -87,13 +87,13 @@
 			<version>5.0.0</version>
 		</dependency>
 
-		
+
 		<!--LUCENE End -->
-<dependency>
- <groupId>org.wltea.analyzer</groupId>
- <artifactId>IKAnalyzer</artifactId>
- <version>5.0</version>
-</dependency>
+		<dependency>
+			<groupId>org.wltea.analyzer</groupId>
+			<artifactId>IKAnalyzer</artifactId>
+			<version>5.0</version>
+		</dependency>
 		<!-- SPRINGSIDE -->
 		<dependency>
 			<groupId>org.springside</groupId>
@@ -141,17 +141,21 @@
 			<version>${tomcat-jdbc.version}</version>
 			<scope>runtime</scope>
 		</dependency>
+		<dependency>
+			<groupId>org.mitre.dsmiley.httpproxy</groupId>
+			<artifactId>smiley-http-proxy-servlet</artifactId>
+			<version>1.7</version>
+		</dependency>
+		<!-- jdbc driver -->
+		<dependency>
+			<groupId>com.oracle</groupId>
+			<artifactId>ojdbc14</artifactId>
+			<version>10.2.0.4.0</version>
+		</dependency>
 
-	<!-- jdbc driver -->
-<dependency>
-	<groupId>com.oracle</groupId>
-	<artifactId>ojdbc14</artifactId>
-	<version>10.2.0.4.0</version>
-</dependency>
+		<!-- PERSISTENCE end -->
 
-	<!-- PERSISTENCE end -->
-
-	<!-- WEB begin -->
+		<!-- WEB begin -->
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-webmvc</artifactId>
@@ -400,11 +404,11 @@
 			<artifactId>commons-io</artifactId>
 			<version>2.4</version>
 		</dependency>
-	<dependency>
-	<groupId>commons-lang</groupId>
-	<artifactId>commons-lang</artifactId>
-	<version>2.6</version>
-</dependency>
+		<dependency>
+			<groupId>commons-lang</groupId>
+			<artifactId>commons-lang</artifactId>
+			<version>2.6</version>
+		</dependency>
 
 	</dependencies>
 

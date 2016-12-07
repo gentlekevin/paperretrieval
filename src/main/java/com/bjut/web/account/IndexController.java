@@ -17,6 +17,7 @@ import com.bjut.repository.HotPaperDao;
 import com.bjut.search.IndexConstant;
 import com.bjut.service.paper.HotPaperService;
 import com.bjut.service.paper.PaperService;
+import com.bjut.service.search.IndexService;
 import com.bjut.service.search.SearchService;
 import com.bjut.web.formbean.SearchBean;
 
@@ -35,6 +36,8 @@ public class IndexController {
 	private SearchService searchService;
 	@Autowired
 	private HotPaperService hotPaperService;
+	@Autowired
+	private IndexService indexService;
 	
 	@RequestMapping(value="/index",method = {RequestMethod.GET,RequestMethod.POST})
 	public String index(Model model) {
@@ -43,7 +46,20 @@ public class IndexController {
 		model.addAttribute("hotPapers",hotPapers);
 		return "/index";
 	}
-
+	
+	@RequestMapping(value="/admin",method = {RequestMethod.GET,RequestMethod.POST})
+	public String admin(Model model) {
+		return "/admin";
+	}
+	@RequestMapping(value="/indexUpdate",method = {RequestMethod.GET,RequestMethod.POST})
+	public String indexUpdate(Model model) {
+		return "/indexUpdate";
+	}
+	@RequestMapping(value="/indexFP",method = {RequestMethod.GET,RequestMethod.POST})
+	public String indexFP(Model model) {
+		indexService.CreateFPAuthorsPapersIndex();
+		return "/index";
+	}
 	
 	/**
 	 * 

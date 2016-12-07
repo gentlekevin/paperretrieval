@@ -18,7 +18,7 @@ public class OracleJdbcConn {
   try {
    Class.forName("oracle.jdbc.driver.OracleDriver");
    //new oracle.jdbc.driver.OracleDriver();
-   conn = DriverManager.getConnection("jdbc:oracle:thin:@172.21.7.9:1521:bjutailib", "bjut", "bjut");
+   conn = DriverManager.getConnection("jdbc:oracle:thin:@172.21.15.6:1521:bjutailib", "bjut", "Bjut123456");
    stmt = conn.createStatement();
    rs = stmt.executeQuery("select paperid,authors from T_PAPER_AUTHOR");
    

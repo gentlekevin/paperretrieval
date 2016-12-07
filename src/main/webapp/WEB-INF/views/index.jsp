@@ -1,7 +1,7 @@
 <%@ page contentType="text/html;charset=UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <c:set var="ctx" value="${pageContext.request.contextPath}" />
-
+<%@ taglib prefix="shiro" uri="http://shiro.apache.org/tags" %>
 <!DOCTYPE html>
 <html lang="zh-cn">
 <head>
@@ -38,16 +38,23 @@
 	<!--顶部-->
 	<div class="layout bg-black bg-inverse">
 		<div class="container height-large">
-			<span class="float-right text-small text-gray hidden-l"> <a
-				class="text-main" style="cursor:pointer;"  href="${ctx}/register" >注册</a><span> | </span><a
-				class="text-main" style="cursor:pointer;"  href="${ctx}/login">登录</a>
+			<span class="float-right text-small text-gray hidden-l"> 
+		<shiro:guest>  
+            <a	class="text-main" style="cursor:pointer;"  href="${ctx}/register" >注册</a><span> | </span>
+			<a	class="text-main" style="cursor:pointer;"  href="${ctx}/login">登录</a>
+         </shiro:guest> 
+			 <shiro:user>  
+                                      欢迎 <shiro:principal/>，<a href="${ctx}/logout">退出</a>  
+             </shiro:user>
+          
+             <shiro:hasRole name="admin"> 
+              &nbsp;&nbsp;<a href="${ctx}/admin">后台管理</a> 
+             </shiro:hasRole> 
+		
 			</span> 欢迎使用<a href="#">统一检索系统</a>
 		</div>
-		
-    
+   
 	</div>
-
-
 	<!--导航-->
 	<div class="demo-nav padding-big-top padding-big-bottom fixed">
 		<div class="container padding-top padding-bottom">
@@ -84,6 +91,7 @@
 							联系我们 010-67398888</div>
 					</div>
 
+         
 				</div>
 
 			</div>
@@ -130,6 +138,7 @@
 									<option value="title">篇名</option>
 									<option value="author">作者</option>
 									<option value="keyword">关键字</option>
+									
 																	</select>
 							</div>
 						</div>

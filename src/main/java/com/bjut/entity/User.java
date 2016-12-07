@@ -4,10 +4,15 @@ import java.util.Date;
 import java.util.List;
 
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
 import org.apache.commons.lang3.StringUtils;
+
 import com.bjut.entity.IdEntity;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -16,10 +21,11 @@ import com.google.common.collect.ImmutableList;
 
 @Entity
 @Table(name = "t_user")
-public class User extends IdEntity {
+public class User{
 
 	// Fields
-
+    
+	private long id;
 	private String loginName;
 	private String name;
 	private String plainPassword;
@@ -42,7 +48,7 @@ public class User extends IdEntity {
 	/** default constructor */
 	public User() {
 	}
-    public User(Long id){
+    public User(long id){
     	this.id  = id;
     }
 	/** full constructor */
@@ -56,12 +62,13 @@ public class User extends IdEntity {
 		return this.password;
 	}
 
-	public User(String loginName, String name, String plainPassword,
+	public User(long id, String loginName, String name, String plainPassword,
 			String password, String salt, String roles, String loginname2,
 			String realname, String affiname, String perm, String major,
 			String extensionone, String extensiontwo, String title,
 			String emails, String visit, String userNo) {
 		super();
+		this.id = id;
 		this.loginName = loginName;
 		this.name = name;
 		this.plainPassword = plainPassword;
@@ -80,6 +87,17 @@ public class User extends IdEntity {
 		this.visit = visit;
 		this.userNo = userNo;
 	}
+	@Id
+	@GeneratedValue(strategy=GenerationType.SEQUENCE, generator="UserSequence")
+	@SequenceGenerator(name = "UserSequence", sequenceName = "SEQ_USER", allocationSize=20)
+	public long getId() {
+		return id;
+	}
+	public void setId(long id) {
+		this.id = id;
+	}
+	
+	
 	public void setPassword(String password) {
 		this.password = password;
 	}

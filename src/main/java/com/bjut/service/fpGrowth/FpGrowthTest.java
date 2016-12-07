@@ -23,7 +23,7 @@ public class FpGrowthTest {
     private static long count=0;
     public static void main(String[] args) throws IOException{
         //从文件中读取事物数据集
-    	  String file="e://test.txt";
+    	  String file="e://test1.txt";
         Iterator<String> lineIte = FileUtils.lineIterator(new File(file));
         List<List<String>> transactions = new ArrayList<List<String>>();
         while(lineIte.hasNext()){

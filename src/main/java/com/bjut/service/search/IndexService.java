@@ -3,7 +3,10 @@ package com.bjut.service.search;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+
 import org.apache.lucene.analysis.Analyzer;
+import org.apache.lucene.analysis.core.WhitespaceAnalyzer;
+import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.LongField;
 import org.apache.lucene.document.StringField;
@@ -20,10 +23,14 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Component;
 import org.springside.modules.utils.Clock;
 import org.wltea.analyzer.lucene.IKAnalyzer;
+
+import com.bjut.entity.AuthorsPapers;
 import com.bjut.entity.CNKI;
 import com.bjut.entity.IEEE;
 import com.bjut.entity.Springer;
+import com.bjut.repository.AuthorsPapersDao;
 import com.bjut.repository.CNKIDao;
+import com.bjut.repository.AuthorPapersDao;
 import com.bjut.repository.IEEEDao;
 import com.bjut.repository.SpringerDao;
 import com.bjut.service.SpecificationFindUtil;
@@ -46,13 +53,14 @@ public class IndexService {
 
 	private static Logger logger = LoggerFactory.getLogger(IndexService.class);
 	private Clock clock = Clock.DEFAULT;
-
 	@Autowired
 	private CNKIDao cnkiDao;
 	@Autowired
 	private SpringerDao springerDao;
 	@Autowired
 	private IEEEDao ieeeDao;
+	@Autowired
+	private AuthorsPapersDao authorsPapersDao;
 
 	 /**
 	  * 建立IEEE文献的索引
@@ -295,7 +303,75 @@ public class IndexService {
 		}
 
 	}
+	 /**
+	  * 建立FP作者频繁项集索引
+	  */
+	public void CreateFPAuthorsPapersIndex() {
 
+		Analyzer analyzer = null;
+		IndexWriterConfig iwc = null;
+		IndexWriter writer = null;
+		MMapDirectory mdir = null;
+		try {
+
+			Path path = Paths.get(IndexConstant.fpAuthorsPapersIndexPath);
+			mdir = new MMapDirectory(path);
+			analyzer = new WhitespaceAnalyzer();
+			iwc = new IndexWriterConfig(analyzer);
+			iwc.setOpenMode(OpenMode.CREATE);
+			iwc.setRAMBufferSizeMB(2048);
+			writer = new IndexWriter(mdir, iwc);
+
+			boolean flag = true;
+			int count = 0;
+			int pagesize = 1000;
+			int pageNum = 1;
+			Document doc = SingleDucument.getInstance();
+			LongField idField = SingleIdField.getInstance();
+			
+			TextField author = SingleAuthorField.getInstance();
+			doc.add(idField);
+			doc.add(author);
+			writer.addDocument(doc);
+
+			Page<AuthorsPapers> papers = null;
+			logger.info("index begin,begin time:"
+					+ clock.getCurrentTimeInMillis());
+			while (flag) {
+				papers = this.findAuthorsPapersByNum(pagesize, pageNum);
+				if (papers.getContent().size() < 1000) {
+					flag = false;
+					count = count + papers.getSize();
+				} else {
+					count = count + 1000;
+				}
+				pageNum++;
+
+				for (AuthorsPapers paper : papers) {
+					if (paper.getAuthors() != null) {
+						author.setStringValue(paper.getAuthors().replaceAll(",", " "));
+					}
+					
+					idField.setLongValue(paper.getId());
+
+					writer.addDocument(doc);
+				}
+				logger.info("paper cnki index{}pages,total:{}records--------",
+						pageNum, count);
+			}
+			writer.forceMerge(1);
+			// close writer
+			writer.close();
+			logger.info("index end,end time:" + clock.getCurrentTimeInMillis());
+		} catch (IOException e) {
+			logger.error("someting wrong:{}", e);
+			e.printStackTrace();
+		}
+
+	}
+	
+	
+	
 	// 分页查询数据库
 	public Page<IEEE> findIeeePage(int pageSize, int pageNumber) {
 
@@ -322,5 +398,16 @@ public class IndexService {
 		return (Page<CNKI>) cnkiDao.findAll(null, pageRequest);
 
 	}
+	
+
+	
+	// 分页查询数据库
+		public Page<AuthorsPapers> findAuthorsPapersByNum(int pageSize, int pageNumber) {
+
+			PageRequest pageRequest = SpecificationFindUtil.buildPageRequest(
+					pageNumber, pageSize, "id");
+			return (Page<AuthorsPapers>) authorsPapersDao.findAll(null, pageRequest);
+
+		}
 
 }

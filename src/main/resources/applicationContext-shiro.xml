@@ -19,11 +19,11 @@
 	<!-- Shiro Filter -->
 	<bean id="shiroFilter" class="org.apache.shiro.spring.web.ShiroFilterFactoryBean">
 		<property name="securityManager" ref="securityManager" />
-		<property name="loginUrl" value="/index" />
+		<property name="loginUrl" value="/login" />
 		<property name="successUrl" value="/index" />
 		<property name="filterChainDefinitions">
 			<value>
-				/login = anon
+				/login = authc
 				/register = anon
 				/logout = logout
 				/static/** = anon

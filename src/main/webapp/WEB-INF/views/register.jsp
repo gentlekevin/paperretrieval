@@ -18,7 +18,14 @@
 <link href="#/favicon.ico" rel="bookmark icon" />
 <script type="text/javascript">
 	function subForm() {
-		$("#searchForm").submit();
+		var password = $("#password").val();
+		var plainPassword = $("#plainPassword").val();
+		if(plainPassword==password){
+			$("#registerForm").submit();
+		}else{
+			alert("两次输入的密码不一致！");
+		}
+		
 	}
 </script>
 <style>
@@ -85,13 +92,13 @@
 
 	</div>
 	<div style="width: 50%; margin: 5% 10% 0% 15%;">
-		<form method="post" class="form form-block">
+		<form id="registerForm" method="post" class="form form-block" action="${ctx}/register">
 			<div class="form-group">
 				<div class="label">
 					<label for="username"> 账号</label>
 				</div>
 				<div class="field">
-					<input type="text" class="input" id="username" name="username" style="width: 400px"
+					<input type="text" class="input" id="loginName" name="loginName" style="width: 400px"
 						size="50" data-validate="required:必填" placeholder="手机/邮箱/账号" />
 				</div>
 			</div>
@@ -109,19 +116,16 @@
 					<label for="password"> 再次密码</label>
 				</div>
 				<div class="field">
-					<input type="password" class="input" id="password" name="password" style="width: 400px"
+					<input type="password" class="input" id="plainPassword" name="plainPassword" style="width: 400px"
 						size="50" data-validate="required:必填" placeholder="请再次输入密码" />
 				</div>
 			</div>
 			<div class="form-button">
-				<button class="button bg-green" type="submit">注册</button>
+				<button class="button bg-green" type="button" onclick="subForm();">注册</button>
 				<button class="button bg-yellow form-reset" type="reset"> 重设</button>
 			</div>
 		</form>
 	</div>
-	<div class="hidden">
-		<script src="http://s4.cnzz.com/stat.php?id=5952475&web_id=5952475"
-			language="JavaScript"></script>
-	</div>
+	
 </body>
 </html>

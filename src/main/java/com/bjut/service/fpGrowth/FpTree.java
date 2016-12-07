@@ -23,7 +23,7 @@ public class FpTree {
     public static void main(String[] args) throws IOException{
         //从文件中读取事物数据集
     	  String file="e://test1.txt";
-        Iterator<String> lineIte = FileUtils.lineIterator(new File(file));
+        Iterator<String> lineIte = FileUtils.lineIterator(new File(file),"utf-8");
         List<List<String>> transactions = new ArrayList<List<String>>();
         while(lineIte.hasNext()){
             String line = lineIte.next();

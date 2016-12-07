@@ -153,6 +153,7 @@
 									<option   ${searchBean.searchfield== 'title' ? 'selected' : ''}   value="title">题目</option>
 									<option   ${searchBean.searchfield== 'author' ? 'selected' : ''}  value="author">作者</option>
 									<option  ${searchBean.searchfield== 'keyword' ? 'selected' : ''}   value="keyword">关键字</option>
+									
 								</select>
 							</div>
 						</div>
@@ -171,12 +172,12 @@
 				
 				
 				<div class="xl12 xm8" style="width: 100%">
-				<br> 共 ${pager.totalPages} 页/${pager.totalRows}条记录 <br/>
+				<br> 共 ${pager.totalPages}  页/${pager.totalRows}  条记录 ,共花费${time}秒 <br/>
 					<div class="xl12 xm4" style="width: 100%;padding-left:0px">
 								<div class="padding-big bg">
 					<ul class="list-media list-underline">
 					
-					<c:forEach var="paper" items="${papers}">
+					<c:forEach var="paper" items="${papers}"> 
 					   <li>
 							<div class="media media-x">
 

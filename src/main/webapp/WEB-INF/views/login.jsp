@@ -1,4 +1,7 @@
 <%@ page contentType="text/html;charset=UTF-8"%>
+<%@ page import="org.apache.shiro.web.filter.authc.FormAuthenticationFilter"%>
+<%@ page import="org.apache.shiro.authc.ExcessiveAttemptsException"%>
+<%@ page import="org.apache.shiro.authc.IncorrectCredentialsException"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <c:set var="ctx" value="${pageContext.request.contextPath}" />
 
@@ -40,9 +43,7 @@
 		<div class="container height-large">
 			欢迎使用<a href="${ctx}/">统一检索系统</a>
 		</div>
-
-
-	</div>
+</div>
 	
 	<!--导航-->
 	<div class="demo-nav padding-big-top padding-big-bottom fixed">
@@ -74,18 +75,24 @@
 							<li><a href="#">加入我们</a></li>
 						</ul>
 					</div>
-
-					
-
 				</div>
 
 			</div>
-
 		</div>
-
 	</div>
+	<%
+	String error = (String) request.getAttribute(FormAuthenticationFilter.DEFAULT_ERROR_KEY_ATTRIBUTE_NAME);
+	if(error != null){
+	%>
+		<div class="alert alert-error input-medium controls">
+			<button class="close" data-dismiss="alert">×</button>登录失败，请重试.
+		</div>
+	<%
+	}
+	
+	%>
 	<div style="width: 50%; margin: 5% 10% 0% 15%;">
-		<form method="post" class="form form-block">
+		<form method="post" class="form form-block" action="${ctx}/login">
 			<div class="form-group">
 				<div class="label">
 					<label for="username"> 账号</label>
@@ -110,9 +117,6 @@
 			</div>
 		</form>
 	</div>
-	<div class="hidden">
-		<script src="http://s4.cnzz.com/stat.php?id=5952475&web_id=5952475"
-			language="JavaScript"></script>
-	</div>
+	
 </body>
 </html>

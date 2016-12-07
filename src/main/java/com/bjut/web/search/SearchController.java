@@ -1,6 +1,9 @@
 
 package com.bjut.web.search;
 
+import java.io.IOException;
+import java.math.BigDecimal;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -13,6 +16,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+
 import com.bjut.entity.Paper;
 import com.bjut.search.IndexConstant;
 import com.bjut.service.paper.HotPaperService;
@@ -74,6 +78,7 @@ public class SearchController {
 		
 	
 		
+		
 		//封装searchDatabase ，默认是cnki,springer,ieee		
 		if(searchBean.getDatabase()==null||"".equals(searchBean.getDatabase())){
 			databases =	(IndexConstant.cnki+","+IndexConstant.springer+","+IndexConstant.ieee).split(",");
@@ -106,9 +111,20 @@ public class SearchController {
 				 q=q+ searchBean.getSearchwords()+",";
 			}
 			querystrings = q.split(",");
-		}		
+		}	
+		 double time = 0;
+			BigDecimal bd = null;
 		try {			
+			
+			long begintime = System.nanoTime();//纳秒
+			Date begin = new Date();
 			map = searchService.findPaperBypage(querystrings, fields,dbIndex ,start , end);
+			long endtime = System.nanoTime();//纳秒
+			Date end1 = new Date();
+			BigDecimal diff = BigDecimal.valueOf(endtime-begintime,10);//秒级差值
+			 
+			 time = diff.setScale(4,BigDecimal.ROUND_HALF_UP).doubleValue();  
+			 time =( end1.getTime()-begin.getTime())/1000f;
 		} catch (ParseException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -118,7 +134,7 @@ public class SearchController {
 		model.addAttribute("pager", new PageBean(pageSize, currentPage, (Integer)map.get("total")));
 		model.addAttribute("papers",map.get("papers"));
 		model.addAttribute("searchBean",searchBean);
-		
+		model.addAttribute("time",time);
 		return "/search";
 	}	
 	
@@ -127,7 +143,16 @@ public class SearchController {
 	    	
 		Paper paper = paperService.findPaperById(Long.valueOf(paperId));
 		hotPaperService.saveVisitPaper(paper);//用作hotpaper用
-		List<Paper> recommandPapers= searchService.recommand(paper);
+		List<Paper> recommandPapers = null;
+		try {
+			recommandPapers = searchService.recommand(paper,paperId);
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		
 		
 		model.addAttribute("paper", paper);

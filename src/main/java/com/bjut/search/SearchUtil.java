@@ -11,10 +11,10 @@ public class SearchUtil {
 		  
 		  float score =0;
 			switch(i){
-			case 1:score=2f;break;
-			case 2:score=1f;break;
-			case 3:score=0.5f;break;
-			default:score=0.1f ;break;
+			//case 1:score=2f;break;
+			//case 2:score=1f;break;
+			//case 3:score=0.5f;break;
+			default:score=2f ;break;
 			}
 		  
 		return score;
@@ -25,10 +25,8 @@ public class SearchUtil {
 		  float score =0;
 			switch(i){
 			case 1:score=1;break;
-			case 2:score=0.5f;break;
-			case 3:score=0.2f;break;
-				
-			default:score=0.1f ;break;
+							
+			default:score=0.5f ;break;
 			}
 		  
 		return score;
